@@ -19,17 +19,27 @@ def parse_date(date_str):
         return None
 
 def extract_amount(message):
-    match = re.search(r"(\d+)\s*RWF", message)
-    return int(match.group(1)) if match else None
+    match = re.search(r"([\d,]+)\s*RWF", message)
+    if match:
+        amount = match.group(1).replace(",", "")
+        logging.info(f"Extracted Amount: {amount}")
+        return int(amount)
+    return None
 
 def extract_transaction_id(message):
-    match = re.search(r"Transaction ID: (\d+)", message)
-    return match.group(1) if match else None
+    match = re.search(r"(?:Transaction|Ref(?:erence)?)\s*ID[:\s]+([\w\d-]+)", message, re.IGNORECASE)
+
+    if match:
+        logging.info(f"Extracted Transaction ID: {match.group(1)}")
+        return match.group(1)
+    return None
 
 def extract_date(message):
-    match = re.search(r"Date: (.+)$", message)
+    match = re.search(r"Date[:\s]+([\d-]+ [\d:]+)", message)
     if match:
-        return parse_date(match.group(1))
+        extracted_date = match.group(1)
+        print(f"Extracted Date: {extracted_date}")
+        return parse_date(extracted_date)
     return None
 
 def categorize_message(message):
@@ -40,9 +50,7 @@ def categorize_message(message):
         "date": extract_date(message)
     }
 
-
     msg_lower = message.lower()
-
 
     if "you have received" in msg_lower:
         cleaned_data["category"] = "Incoming Money"
@@ -68,15 +76,18 @@ def categorize_message(message):
     return cleaned_data
 
 def process_xml_file(file_path):
-    tree = ET.parse(file_path)
-    root = tree.getroot()
+    try:
+        tree = ET.parse(file_path)
+        root = tree.getroot()
+    except ET.ParseError:
+        logging.error(f"Error parsing XML file: {file_path}")
+        return []
 
     processed_data = []
 
     for sms in root.findall('sms'):
-        body_element = sms.find('body')
-        if body_element is not None and body_element.text:
-            body = body_element.text
+        body = sms.get('body')  # FIXED: Get the 'body' attribute correctly
+        if body:
             cleaned_data = categorize_message(body)
             if cleaned_data:
                 processed_data.append(cleaned_data)
@@ -90,11 +101,8 @@ def process_xml_file(file_path):
 if __name__ == "__main__":
     file_path = "modified_sms_v2.xml"
     processed_messages = process_xml_file(file_path)
-    
 
     df = pd.DataFrame(processed_messages)
-    
-
     df.to_csv("cleaned_sms_data.csv", index=False)
-    
+
     print("Data cleaned and saved as cleaned_sms_data.csv")
