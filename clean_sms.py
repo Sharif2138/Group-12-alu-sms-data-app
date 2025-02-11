@@ -12,7 +12,6 @@ logging.basicConfig(
 )
 
 def parse_date(date_str):
-    """Convert date string to a standard format (YYYY-MM-DD)."""
     try:
         date_obj = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
         return date_obj.strftime("%Y-%m-%d")
@@ -20,26 +19,20 @@ def parse_date(date_str):
         return None
 
 def extract_amount(message):
-    """Extract amount from the message and convert it to an integer."""
     match = re.search(r"(\d+)\s*RWF", message)
     return int(match.group(1)) if match else None
 
 def extract_transaction_id(message):
-    """Extract transaction ID from the message."""
     match = re.search(r"Transaction ID: (\d+)", message)
     return match.group(1) if match else None
 
 def extract_date(message):
-    """Extract and standardize the date from the message."""
     match = re.search(r"Date: (.+)$", message)
     if match:
         return parse_date(match.group(1))
     return None
 
 def categorize_message(message):
-    """
-    Categorize SMS messages into predefined types and extract relevant information.
-    """
     cleaned_data = {
         "category": "Other",
         "amount": extract_amount(message),
@@ -75,7 +68,6 @@ def categorize_message(message):
     return cleaned_data
 
 def process_xml_file(file_path):
-    """Parse the XML file, clean and categorize SMS messages, and log unprocessed ones."""
     tree = ET.parse(file_path)
     root = tree.getroot()
 
@@ -94,7 +86,7 @@ def process_xml_file(file_path):
     return processed_data
 
 if __name__ == "__main__":
-    file_path = "modified_sms.xml"
+    file_path = "modified_sms_v2.xml"
     processed_messages = process_xml_file(file_path)
     
 
