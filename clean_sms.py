@@ -74,14 +74,16 @@ def process_xml_file(file_path):
     processed_data = []
 
     for sms in root.findall('sms'):
-        body = sms.find('body').text
-        
-        if body:
+        body_element = sms.find('body')
+        if body_element is not None and body_element.text:
+            body = body_element.text
             cleaned_data = categorize_message(body)
             if cleaned_data:
                 processed_data.append(cleaned_data)
             else:
                 logging.info(f"Unprocessed message: {body}")
+        else:
+            logging.info("Skipped an SMS with missing <body> tag.")
 
     return processed_data
 
