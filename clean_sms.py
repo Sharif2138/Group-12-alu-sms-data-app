@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 import re
 import logging
 from datetime import datetime
+import pandas as pd
 
 
 logging.basicConfig(
@@ -9,7 +10,6 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(message)s'
 )
-
 
 def parse_date(date_str):
     """Convert date string to a standard format (YYYY-MM-DD)."""
@@ -19,18 +19,15 @@ def parse_date(date_str):
     except ValueError:
         return None
 
-
 def extract_amount(message):
     """Extract amount from the message and convert it to an integer."""
     match = re.search(r"(\d+)\s*RWF", message)
     return int(match.group(1)) if match else None
 
-
 def extract_transaction_id(message):
     """Extract transaction ID from the message."""
     match = re.search(r"Transaction ID: (\d+)", message)
     return match.group(1) if match else None
-
 
 def extract_date(message):
     """Extract and standardize the date from the message."""
@@ -39,50 +36,43 @@ def extract_date(message):
         return parse_date(match.group(1))
     return None
 
-
 def categorize_message(message):
     """
     Categorize SMS messages into predefined types and extract relevant information.
     """
     cleaned_data = {
-        "category": None,
-        "amount": None,
-        "transaction_id": None,
-        "date": None
+        "category": "Other",
+        "amount": extract_amount(message),
+        "transaction_id": extract_transaction_id(message),
+        "date": extract_date(message)
     }
 
-    if "You have received" in message:
+
+    msg_lower = message.lower()
+
+
+    if "you have received" in msg_lower:
         cleaned_data["category"] = "Incoming Money"
-    elif "Your payment of" in message:
-        cleaned_data["category"] = "Payment to Code Holder"
-    elif "Transfer to Mobile Number" in message:
-        cleaned_data["category"] = "Transfer to Mobile Number"
-    elif "Bank Deposit" in message:
-        cleaned_data["category"] = "Bank Deposit"
-    elif "Airtime Bill Payment" in message:
-        cleaned_data["category"] = "Airtime Bill Payment"
-    elif "Cash Power Bill Payment" in message:
-        cleaned_data["category"] = "Cash Power Bill Payment"
-    elif "Transaction by Third Party" in message:
-        cleaned_data["category"] = "Third Party Transaction"
-    elif "Withdrawal from Agent" in message:
-        cleaned_data["category"] = "Agent Withdrawal"
-    elif "Bank Transfer" in message:
-        cleaned_data["category"] = "Bank Transfer"
-    elif "Internet and Voice Bundle Purchase" in message:
-        cleaned_data["category"] = "Internet and Voice Bundle Purchase"
+    elif "your payment of" in msg_lower or "payment to code holder" in msg_lower:
+        cleaned_data["category"] = "Payments to Code Holders"
+    elif "transfer to mobile number" in msg_lower or "sent to" in msg_lower:
+        cleaned_data["category"] = "Transfers to Mobile Numbers"
+    elif "bank deposit" in msg_lower:
+        cleaned_data["category"] = "Bank Deposits"
+    elif "airtime bill payment" in msg_lower or "airtime purchase" in msg_lower:
+        cleaned_data["category"] = "Airtime Bill Payments"
+    elif "cash power bill payment" in msg_lower:
+        cleaned_data["category"] = "Cash Power Bill Payments"
+    elif "transaction by third party" in msg_lower or "third party transaction" in msg_lower:
+        cleaned_data["category"] = "Transactions Initiated by Third Parties"
+    elif "withdrawal from agent" in msg_lower or "agent withdrawal" in msg_lower:
+        cleaned_data["category"] = "Withdrawals from Agents"
+    elif "bank transfer" in msg_lower:
+        cleaned_data["category"] = "Bank Transfers"
+    elif "internet bundle" in msg_lower or "voice bundle" in msg_lower:
+        cleaned_data["category"] = "Internet and Voice Bundle Purchases"
 
-
-    cleaned_data["amount"] = extract_amount(message)
-    cleaned_data["transaction_id"] = extract_transaction_id(message)
-    cleaned_data["date"] = extract_date(message)
-
-
-    if all(value is not None for value in cleaned_data.values()):
-        return cleaned_data
-    else:
-        return None
-
+    return cleaned_data
 
 def process_xml_file(file_path):
     """Parse the XML file, clean and categorize SMS messages, and log unprocessed ones."""
@@ -103,12 +93,14 @@ def process_xml_file(file_path):
 
     return processed_data
 
-
 if __name__ == "__main__":
     file_path = "modified_sms.xml"
     processed_messages = process_xml_file(file_path)
     
-    for message in processed_messages:
-        print(message)
 
+    df = pd.DataFrame(processed_messages)
+    
 
+    df.to_csv("cleaned_sms_data.csv", index=False)
+    
+    print("Data cleaned and saved as cleaned_sms_data.csv")
