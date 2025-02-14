@@ -14,14 +14,14 @@ def clean_and_categorize_sms(xml_file: str) -> list:
         address = sms.attrib.get('address', "Unknown")
         transaction_id = extract_transaction_id(body)
 
-        # Data Cleaning: Normalize Amount and Date
+        
         amount = extract_amount(body)
         if date:
             date = datetime.fromtimestamp(int(date) / 1000).strftime('%Y-%m-%d %H:%M:%S')
 
         category = categorize_sms(body.lower())
 
-        if amount is not None and date:  # Only append if amount and date are valid
+        if amount is not None and date: 
             categorized_sms.append({
                 "address": address,
                 "date": date,
@@ -34,10 +34,10 @@ def clean_and_categorize_sms(xml_file: str) -> list:
 
 def extract_transaction_id(body: str) -> str:
     """Extracts the transaction ID from the SMS body."""
-    match = re.search(r'TxId:\s*(\d+)', body)  # First check for TxId
+    match = re.search(r'TxId:\s*(\d+)', body)  
     if match:
         return match.group(1)
-    match = re.search(r'\bTransaction Id:\s*(\d+)', body)  # Check for other forms of transaction IDs
+    match = re.search(r'\bTransaction Id:\s*(\d+)', body) 
     if match:
         return match.group(1)
     return "N/A"
