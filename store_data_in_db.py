@@ -17,5 +17,4 @@ with open('cleaned_data.csv') as csv_file:
         cursor.execute("INSERT INTO momo (address, date, amount, category, transaction_id) VALUES (?, ?, ?, ?, ?)", i)
 # commit changes and close the connection to the database
 conn.commit()
-conn.close
-
+conn.close()
