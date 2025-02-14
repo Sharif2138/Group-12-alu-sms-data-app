@@ -1,0 +1,5 @@
+address|date|amount|category|transaction_id
+M-Money|2024-05-10 16:30:58|2000|Incoming Money|76662021700
+M-Money|2024-05-10 16:31:46|0|Payments to Code Holders|73214484437
+M-Money|2024-05-10 21:32:40|600|Payments to Code Holders|51732411227
+M-Money|2024-05-11 18:45:36|40000|Bank Deposits|N/A
