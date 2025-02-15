@@ -1,20 +1,28 @@
 /* styles.css */
 body {
     font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
-    text-align: center;
-    background-color: #f4f4f4;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
-    color: #333;
     text-align: center;
+    color: #333;
 }
 
 .filters {
     margin-bottom: 20px;
-    display: flexbox;
+    display: flex;
     gap: 10px;
 }
 
@@ -45,24 +53,17 @@ h1 {
 }
 
 table {
-    width: 80%;
+    width: 100%;
     border-collapse: collapse;
-    background: white;
 }
 
 th, td {
-    border: 1px solid #ddd;
     padding: 10px;
     text-align: left;
+    border-bottom: 1px solid #ddd;
 }
 
 th {
-    background: #007bff;
+    background-color: #007bff;
     color: white;
-}
-
-canvas {
-    width: 80%;
-    max-width: 600px;
-    margin-top: 20px;
 }
