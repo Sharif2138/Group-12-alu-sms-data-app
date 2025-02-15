@@ -19,5 +19,5 @@ How to run it...
 Meet the Team!
 This dashboard was built with L❤️VE by:
 *Tracey & Josephine – Frontend & UI Design
-*Shariff & Desparavis – Data Processing & Backend
+*Shariff & Desparvis – Data Processing & Backend
 
