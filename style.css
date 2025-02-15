@@ -1,22 +1,50 @@
 body {
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
     text-align: center;
     background-color: #f4f4f4;
 }
 
 h1 {
     color: #333;
+    text-align: center;
 }
 
-#search {
-    padding: 8px;
-    width: 50%;
-    margin-bottom: 10px;
+.filters {
+    margin-bottom: 20px;
+    display: flexbox;
+    gap: 10px;
+}
+
+.filters input, .filters select, .filters button {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.filters button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.filters button:hover {
+    background-color: #0056b3;
+}
+
+.chart-container {
+    margin: 20px 0;
+}
+
+.details {
+    margin-top: 20px;
 }
 
 table {
     width: 80%;
-    margin: auto;
     border-collapse: collapse;
     background: white;
 }
