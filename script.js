@@ -1,5 +1,3 @@
-// script.js
-
 // Function to fetch data from the backend API
 async function fetchData() {
     const searchTerm = document.getElementById('search').value.toLowerCase();
@@ -7,12 +5,12 @@ async function fetchData() {
 
     try {
         // Fetch data from the backend
-        const response = await fetch('http://127.0.0.1:5001/transactions');
+        const response = await fetch('http://127.0.0.1:5000/transactions');
         const transactions = await response.json();
 
         // Filter data based on search term and category
         const filteredData = transactions.filter(transaction => {
-            const matchesSearch = transaction.description.toLowerCase().includes(searchTerm);
+            const matchesSearch = transaction.address && transaction.address.toLowerCase().includes(searchTerm);
             const matchesCategory = categoryFilter ? transaction.category === categoryFilter : true;
             return matchesSearch && matchesCategory;
         });
@@ -30,7 +28,7 @@ function updateChart(data) {
     const categories = [...new Set(data.map(transaction => transaction.category))];
     const amounts = categories.map(category => {
         return data.filter(transaction => transaction.category === category)
-                   .reduce((sum, transaction) => sum + transaction.amount, 0);
+                   .reduce((sum, transaction) => sum + Number(transaction.amount), 0); // Ensure amount is a number
     });
 
     const ctx = document.getElementById('transactionChart').getContext('2d');
@@ -69,7 +67,7 @@ function updateTable(data) {
             <td>${transaction.category}</td>
             <td>${transaction.amount}</td>
             <td>${transaction.date}</td>
-            <td>${transaction.description}</td>
+            <td>${transaction.address}</td> <!-- Use address instead of description -->
         `;
         tableBody.appendChild(row);
     });
